@@ -1,32 +1,38 @@
-package lab1_test;
 import java.util.*;
 import java.util.regex.Pattern;
 public class HW1 {
     public static int q;
+    //take out the last number
+    public static int TakeOutLast(String s, Integer lastLen){
+        while(lastLen>0 && Character.isDigit(s.charAt(lastLen))){
+            lastLen--;
+        }
+        return lastLen;
+    }
     //check if the formula is in the correct form, return true if there is unknown number(e.g. x,y), else false
     public static boolean Check(String s){
         boolean flag = true;
         int len = s.length();
-        //System.out.println(len)
         char sign;
         //take out the last number and check if it is correct
-        int lastNum = len - 1;
-        if(Character.isDigit(s.charAt(lastNum))){
-            while(Character.isDigit(s.charAt(lastNum))){
+        int last = len - 1;
+        int lastNum = last;
+        if(last != 0){
+            if(Character.isDigit(s.charAt(last))){
+                lastNum = TakeOutLast(s, last);
+            }
+            else if(s.charAt(lastNum) >= 'A' && s.charAt(lastNum) <='z'){
                 lastNum--;
             }
-        }
-        else if(s.charAt(lastNum) >= 'A' && s.charAt(lastNum) <='z'){
-            lastNum--;
-        }
-        else{
-            System.out.println("Wrong Format!");
-            flag = false;
+            else{
+                System.out.println("Wrong Format!");
+                flag = false;
+            }
         }
         //check out the rest formula
         for(int i = 0; i < lastNum + 1; i++){
             if(Character.isDigit(s.charAt(i))){
-                while(Character.isDigit(s.charAt(i))){
+                while(i<(lastNum+1) && Character.isDigit(s.charAt(i))){
                     i++;
                 }
             }
@@ -37,34 +43,33 @@ public class HW1 {
                 System.out.println("Wrong Format!");
                 flag = false;
             }
-            sign = s.charAt(i);
-            if(sign == '+' || sign =='*'){
-                
-            }
-            else{
-                System.out.println("Wrong Format!");
-                flag = false;
+            if(i<(lastNum+1)){
+                sign = s.charAt(i);
+                if(sign == '+' || sign =='*'){
+                    
+                }
+                else{
+                    System.out.println("Wrong Format!");
+                    flag = false;
+                }
             }
         }
         return flag;
     }
-    
-    
-    
-    public Stack<String> Expression(String s){
-        //take out all the parts and put them separtely into the list
+    //take out all the parts and put them separtely into the list and transfer them into string
+    public static String[] StoreInList(String s){
         int i;
         ArrayList inOrder = new ArrayList<String>();
         String num = "";
-        int lastLen = s.length() - 1;
-        if(Character.isDigit(s.charAt(lastLen))){		//take out the last num
-            while(Character.isDigit(s.charAt(lastLen))){
-                lastLen--;
-            }
+        int last = s.length() - 1;
+        
+        int lastLen = last;
+        if(Character.isDigit(s.charAt(last))){		//take out the last num
+            lastLen = TakeOutLast(s, last);
         }
         for(i = 0; i < lastLen + 1; i++){	//store the rest(without the last) into the list
             if(Character.isDigit(s.charAt(i))){
-                while(Character.isDigit(s.charAt(i))){
+                while(i<lastLen+1 && Character.isDigit(s.charAt(i))){
                     num = num + s.charAt(i);
                     i++;
                 }
@@ -76,22 +81,27 @@ public class HW1 {
                 inOrder.add(s.charAt(i));
             }
         }
-        for(i = lastLen + 1; i < s.length(); i++){		//add the last num into the list
-            num = num + s.charAt(i);
+        if(lastLen+1!=s.length()){
+            for(i = lastLen + 1; i < s.length(); i++){		//add the last num into the list
+                num = num + s.charAt(i);
+            }
+            inOrder.add(num);
         }
-        inOrder.add(num);
         //change that list into a string form
         String[] inOrder1 = new String[inOrder.size()];
         for(i = 0; i < inOrder.size(); i++){
             inOrder1[i] = inOrder.get(i).toString();
         }
-        //for test
         System.out.println(inOrder);
-        
+        return inOrder1;
+    }
+    public Stack<String> Expression(String s){
+        int i;
+        String[] inOrder1 = StoreInList(s);
         //store numbers into stack1 and operators into stack2, and clear stack2 afterwards
         Stack<String> stack1 = new Stack<String>();
         Stack<String> stack2 = new Stack<String>();
-        for (i = 0; i < inOrder.size(); i++){
+        for (i = 0; i < inOrder1.length; i++){
             //System.out.println(inOrder1[i]);
             if(inOrder1[i].charAt(0) >= '0' && inOrder1[i].charAt(0) <= '9'){
                 stack1.push(inOrder1[i]);
@@ -99,7 +109,7 @@ public class HW1 {
             else if(inOrder1[i].charAt(0) == '*'){
                 stack2.push(inOrder1[i]);
             }
-            else if(inOrder1[i].charAt(0) == '+'){
+            else{
                 while(!stack2.isEmpty() && stack2.lastElement().charAt(0) == '*'){
                     stack1.push(stack2.pop());
                 }
