@@ -244,7 +244,6 @@ public class HW1 {
         String[] merge = null;
         merge = news.split("\\+");
         String newmerge = "";
-        
         for(int i = 0;i < merge.length;i++)
         {
             for(int j = i+1;j<merge.length;j++)
@@ -286,6 +285,41 @@ public class HW1 {
     }
     
     
+    
+    
+    public String judge(String s1,String s)
+	  	{
+            String[] a = null;
+            boolean flag2 = false;//judge of simplify
+            boolean flag3 = true;//judge of assignment
+            do
+            {
+                
+                a = s1.split(" ");
+                if(a[0].equals("!simplify"))
+                {
+                    String temp = " ";//assignment string
+                    String value = " ";
+                    for(int i = 1;i <a.length;i++)
+                    {
+                        temp = a[i];
+                        if(temp.length() < 2)
+                        {
+                            flag3 = false;
+                            break;
+                        }
+                        value = temp.substring(2);
+                        //letter=digit && if has var which  does not exit
+                        if(!value.matches("[0-9]{1,}") || temp.charAt(1) != '=' || !Character.isLetter(temp.charAt(0)) || !s.contains(temp.substring(0,1))) flag3 = false;
+                    }
+                    if(flag3) flag2 = true;
+                    if(!flag2) return "Wrong format!";
+                    flag3 = true;
+                }
+                else  return "Wrong format!";
+            }while(!flag2);
+            return "okfun";
+        }
     
     public static void main(String[] args){
         //scan the formula	
