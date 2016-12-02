@@ -1,1 +1,0 @@
-This document is just for finishing HW3I changed this in order to make some difference for C4
